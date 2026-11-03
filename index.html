@@ -66,7 +66,7 @@
 <div class="container">
     <h2>Welcome to Your Site</h2>
     <p>Enter your details below to test the interactivity script.</p>
-    
+
     <form id="welcomeForm">
         <div class="form-group">
             <label for="userName">Your Name</label>
@@ -82,10 +82,10 @@
     // Client-side script handling form submission interactivity
     document.getElementById('welcomeForm').addEventListener('submit', function(event) {
         event.preventDefault();
-        
+
         const nameInput = document.getElementById('userName').value;
         const messageDiv = document.getElementById('message');
-        
+
         // Display a personalized alert safely inside the DOM
         messageDiv.className = 'success';
         messageDiv.textContent = `Hello, ${nameInput}! Your interactive website script is running perfectly.`;

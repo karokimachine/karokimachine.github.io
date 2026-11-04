@@ -96,12 +96,25 @@
   .mainnav a:hover { background: rgba(255,255,255,.7); color: var(--blue-mid); }
 
   /* ---------- Layout ---------- */
-  .layout { display: flex; align-items: stretch; position: relative; min-height: 70vh; }
+  .layout { display: flex; align-items: stretch; position: relative; min-height: 70vh; overflow: hidden; isolation: isolate; }
+  /* colourful shapes behind the sidebar so the blur has something to frost */
+  .layout::before {
+    content: ''; position: absolute; inset: 0; z-index: -1;
+    background:
+      radial-gradient(circle at 15% 12%, #6fa8ff 0 90px, transparent 91px),
+      radial-gradient(circle at 70% 40%, #ff9ad5 0 70px, transparent 71px),
+      radial-gradient(circle at 25% 62%, #7ef0e0 0 100px, transparent 101px),
+      radial-gradient(circle at 60% 90%, #8f7bff 0 80px, transparent 81px),
+      #1a3d82;
+  }
 
   /* ---------- Clickable sidebar ---------- */
   .sidebar {
     width: var(--sidebar-w); flex-shrink: 0;
-    background: linear-gradient(180deg, #1f4180 0%, #14367a 50%, #0c2a5e 100%);
+    background: linear-gradient(180deg, rgba(31,65,128,.72) 0%, rgba(20,54,122,.7) 50%, rgba(12,42,94,.78) 100%);
+    -webkit-backdrop-filter: blur(14px) saturate(140%);
+    backdrop-filter: blur(14px) saturate(140%);
+    box-shadow: inset -1px 0 0 rgba(255,255,255,.25), 4px 0 14px rgba(0,0,0,.25);
     color: #fff; text-transform: uppercase;
     overflow: hidden;
     transition: width .35s ease;

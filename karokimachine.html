@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Karokimachine Games</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&family=Silkscreen:wght@400;700&family=Caveat:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --blue-bright: #5b8fe3;
+    --blue-mid: #2a5aa8;
+    --blue-dark: #12356e;
+    --silver: #d9dde3;
+    --silver-dark: #aab1bd;
+    --ink: #3b4350;
+    --sidebar-w: 270px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Orbitron', sans-serif;
+    color: var(--ink);
+    background: #e9ecf0;
+    min-height: 100vh;
+  }
+  a { color: inherit; text-decoration: none; }
+
+  /* ---------- Top silver utility bar ---------- */
+  .topbar {
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 16px; padding: 6px 16px;
+    background: linear-gradient(#f3f4f6, #c9cdd4);
+    border-bottom: 2px solid #8d94a0;
+    font-size: .8rem; letter-spacing: .08em; text-transform: uppercase;
+  }
+  .search {
+    flex: 1; max-width: 620px; margin: 0 auto 0 30%;
+    height: 14px; border-radius: 10px; border: 1px solid #aaa;
+    background: linear-gradient(#fff, #eee);
+    box-shadow: inset 0 1px 3px rgba(0,0,0,.2);
+  }
+  .topbar nav { display: flex; gap: 20px; }
+  .topbar a:hover { color: var(--blue-mid); }
+
+  /* ---------- Header ---------- */
+  header {
+    position: relative;
+    background-color: var(--blue-bright);
+    background-image:
+      linear-gradient(rgba(255,255,255,.25) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,.25) 1px, transparent 1px);
+    background-size: 14px 14px;
+    padding: 24px 20px 28px;
+    display: flex; align-items: center; justify-content: center;
+    gap: 22px; flex-wrap: wrap;
+  }
+  .socials { display: flex; gap: 18px; }
+  .social {
+    width: 62px; height: 62px; border-radius: 50%;
+    background: #0a1fe0; color: #fff;
+    display: grid; place-items: center;
+    font-weight: 700; font-size: 1.3rem;
+    box-shadow: 0 3px 8px rgba(0,0,0,.25);
+    transition: transform .15s;
+  }
+  .social:hover { transform: scale(1.12); }
+  .logo { text-align: center; position: relative; }
+  .logo h1 {
+    display: inline-block;
+    font-family: 'Silkscreen', monospace; font-weight: 700;
+    font-size: clamp(1.6rem, 4.5vw, 3.2rem);
+    background: #333; color: #fff; padding: 6px 16px;
+    letter-spacing: .05em;
+  }
+  .logo h2 {
+    font-family: 'Silkscreen', monospace; color: #fff;
+    font-size: clamp(1.6rem, 4vw, 3rem);
+    text-shadow: 2px 2px 0 rgba(0,0,0,.25);
+    letter-spacing: .1em;
+  }
+  .cursor {
+    position: absolute; right: -30px; bottom: -28px; width: 70px;
+    filter: drop-shadow(2px 3px 0 rgba(0,0,0,.4));
+    pointer-events: none;
+  }
+
+  /* ---------- Main nav ---------- */
+  .mainnav {
+    display: flex; justify-content: space-around; flex-wrap: wrap;
+    background: linear-gradient(#e6e8ec, #bfc4cc);
+    border-bottom: 2px solid #8d94a0;
+    padding: 8px 10px; text-transform: uppercase;
+    font-size: .95rem; letter-spacing: .08em;
+  }
+  .mainnav a { padding: 4px 10px; border-radius: 4px; }
+  .mainnav a:hover { background: rgba(255,255,255,.7); color: var(--blue-mid); }
+
+  /* ---------- Layout ---------- */
+  .layout { display: flex; align-items: stretch; position: relative; min-height: 70vh; }
+
+  /* ---------- Clickable sidebar ---------- */
+  .sidebar {
+    width: var(--sidebar-w); flex-shrink: 0;
+    background: linear-gradient(180deg, #1f4180 0%, #14367a 50%, #0c2a5e 100%);
+    color: #fff; text-transform: uppercase;
+    overflow: hidden;
+    transition: width .35s ease;
+    position: relative;
+  }
+  .sidebar.collapsed { width: 0; }
+  .sidebar-inner { width: var(--sidebar-w); padding: 18px 14px 40px; }
+  .sidebar h3 { font-size: 1.5rem; margin-bottom: 28px; }
+  .group { margin-bottom: 22px; }
+  .group-btn {
+    all: unset; cursor: pointer; display: flex; justify-content: space-between; align-items: center;
+    width: 100%; font-family: inherit; font-weight: 500; font-size: 1.1rem;
+    padding: 6px 4px; letter-spacing: .05em;
+  }
+  .group-btn:hover { color: #9ec5ff; }
+  .group-btn .arrow { transition: transform .25s; font-size: .8rem; }
+  .group.open .arrow { transform: rotate(90deg); }
+  .group ul { list-style: none; max-height: 0; overflow: hidden; transition: max-height .3s ease; }
+  .group.open ul { max-height: 200px; }
+  .group li a {
+    display: block; padding: 6px 4px 6px 22px; font-size: 1.05rem; position: relative;
+    border-radius: 4px; transition: background .15s, padding-left .15s;
+  }
+  .group li a::before { content: '•'; position: absolute; left: 6px; }
+  .group li a:hover { background: rgba(255,255,255,.12); padding-left: 28px; }
+
+  /* the little tab that toggles the sidebar */
+  .toggle {
+    position: absolute; top: 14px; left: 0; z-index: 20;
+    width: 30px; height: 56px; border: 0; cursor: pointer;
+    border-radius: 0 8px 8px 0;
+    background: linear-gradient(#f3f4f6, #b9bfc9);
+    box-shadow: 2px 2px 6px rgba(0,0,0,.3);
+    color: var(--blue-dark); font-size: 1rem; font-weight: 700;
+    transition: left .35s ease;
+  }
+  .sidebar:not(.collapsed) ~ .toggle { left: var(--sidebar-w); }
+
+  /* ---------- Content ---------- */
+  .content {
+    flex: 1; min-width: 0; padding: 14px 24px 40px 48px;
+    background: #dfe3e8;
+    background-image: radial-gradient(#c3c9d2 1px, transparent 1px);
+    background-size: 12px 12px;
+  }
+  .content > h4 {
+    font-size: .95rem; letter-spacing: .08em; text-transform: uppercase; margin-bottom: 16px;
+  }
+
+  /* Y2K "window" panels */
+  .win {
+    max-width: 780px; margin: 0 auto 36px;
+    border-radius: 18px;
+    background: linear-gradient(#f4f5f7, #c8ccd3);
+    box-shadow: 0 3px 8px rgba(0,0,0,.25), inset 0 0 0 1px #fff;
+    overflow: hidden;
+  }
+  .win-title {
+    display: flex; align-items: center; padding: 8px 22px;
+    font-size: .85rem; letter-spacing: .08em; text-transform: uppercase;
+    background:
+      linear-gradient(100deg, transparent 70%, #7aa6dc 82%, #1e4a8c 95%),
+      linear-gradient(#f4f5f7, #d6d9de);
+    border-bottom: 1px solid #aaa;
+  }
+  .win-body {
+    margin: 0 4px; background: #ececec; min-height: 120px;
+    display: grid; place-items: center; text-align: center; padding: 20px;
+    box-shadow: inset 0 0 6px rgba(0,0,0,.2);
+  }
+  .win-body.art { min-height: 380px; font-size: 1.8rem; text-transform: uppercase; }
+  .hand { font-family: 'Caveat', cursive; color: #4a5cf0; font-size: 1.7rem; text-transform: none; }
+  .win-foot {
+    height: 32px; display: flex; justify-content: flex-end; align-items: center; padding: 0 22px;
+    background: linear-gradient(#dfe2e7, #bcc2cb);
+    font-size: .65rem; color: var(--blue-mid); font-weight: 700;
+  }
+
+  /* ---------- Mobile: sidebar slides over content ---------- */
+  @media (max-width: 760px) {
+    .topbar .search { display: none; }
+    .sidebar { position: absolute; top: 0; bottom: 0; left: 0; z-index: 10; }
+    .content { padding: 14px 14px 40px 44px; }
+    .social { width: 46px; height: 46px; font-size: 1rem; }
+    .cursor { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="search" aria-hidden="true"></div>
+  <nav><a href="#">Home</a><a href="#">Contact us</a></nav>
+</div>
+
+<header>
+  <div class="socials">
+    <a class="social" href="#" aria-label="Facebook">f</a>
+    <a class="social" href="#" aria-label="Instagram">ig</a>
+    <a class="social" href="#" aria-label="Twitter">t</a>
+  </div>
+
+  <div class="logo">
+    <h1>Karokimachine</h1>
+    <h2>Games</h2>
+    <svg class="cursor" viewBox="0 0 12 19" shape-rendering="crispEdges">
+      <path d="M0 0h2v2h1v2h1v2h1v2h1v2h1v2h2v2H8v1H7v1H6v-1H5v-1H4v-1H3v1H2v1H1v-1H0z" fill="#fff" stroke="#000" stroke-width=".6"/>
+    </svg>
+  </div>
+
+  <div class="socials">
+    <a class="social" href="#" aria-label="TikTok">♪</a>
+    <a class="social" href="#" aria-label="YouTube">▶</a>
+    <a class="social" href="#" aria-label="Pinterest">p</a>
+  </div>
+</header>
+
+<nav class="mainnav">
+  <a href="#">About us</a>
+  <a href="#">Games</a>
+  <a href="#">Dev-log</a>
+  <a href="#">FAQ</a>
+  <a href="#">Specials</a>
+  <a href="#">IDFK-SMT else</a>
+</nav>
+
+<div class="layout">
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-inner">
+      <h3>New!</h3>
+
+      <div class="group open">
+        <button class="group-btn">Execute&gt;Loop <span class="arrow">▶</span></button>
+        <ul>
+          <li><a href="#">Game</a></li>
+          <li><a href="#">Updates</a></li>
+          <li><a href="#">Merch</a></li>
+        </ul>
+      </div>
+
+      <div class="group open">
+        <button class="group-btn">Cure-Yume-Chan <span class="arrow">▶</span></button>
+        <ul>
+          <li><a href="#">Game</a></li>
+          <li><a href="#">Updates</a></li>
+          <li><a href="#">Merch</a></li>
+        </ul>
+      </div>
+    </div>
+  </aside>
+
+  <button class="toggle" id="toggle" aria-label="Toggle sidebar" aria-expanded="true">◀</button>
+
+  <main class="content">
+    <h4>Weekly prompt submissions and fanarts</h4>
+
+    <section class="win">
+      <div class="win-title">@user</div>
+      <div class="win-body art">
+        <div>Art<br><span class="hand">(or whatev)</span></div>
+      </div>
+      <div class="win-foot"></div>
+    </section>
+
+    <section class="win">
+      <div class="win-title">Comments</div>
+      <div class="win-body"><span class="hand">yay !</span></div>
+      <div class="win-foot">MORE ▸</div>
+    </section>
+
+    <section class="win">
+      <div class="win-title">@user</div>
+      <div class="win-body art">Art</div>
+      <div class="win-foot"></div>
+    </section>
+
+    <section class="win">
+      <div class="win-title">Comments</div>
+      <div class="win-body"><span class="hand">Thank you Aria, you're amazing and we love you</span></div>
+      <div class="win-foot">MORE ▸</div>
+    </section>
+  </main>
+</div>
+
+<script>
+  const sidebar = document.getElementById('sidebar');
+  const toggle  = document.getElementById('toggle');
+
+  function setSidebar(open) {
+    sidebar.classList.toggle('collapsed', !open);
+    toggle.textContent = open ? '◀' : '▶';
+    toggle.setAttribute('aria-expanded', open);
+  }
+  toggle.addEventListener('click', () => setSidebar(sidebar.classList.contains('collapsed')));
+
+  // start collapsed on small screens
+  if (window.innerWidth <= 760) setSidebar(false);
+
+  // accordion groups inside the sidebar
+  document.querySelectorAll('.group-btn').forEach(btn =>
+    btn.addEventListener('click', () => btn.parentElement.classList.toggle('open'))
+  );
+</script>
+</body>
+</html>

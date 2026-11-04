@@ -42,47 +42,32 @@
   .topbar nav { display: flex; gap: 20px; }
   .topbar a:hover { color: var(--blue-mid); }
 
-  /* ---------- Header ---------- */
-  header {
-    position: relative;
-    background-color: var(--blue-bright);
-    background-image:
-      linear-gradient(rgba(255,255,255,.25) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(255,255,255,.25) 1px, transparent 1px);
-    background-size: 14px 14px;
-    padding: 24px 20px 28px;
-    display: flex; align-items: center; justify-content: center;
-    gap: 22px; flex-wrap: wrap;
+  /* ---------- Banner ---------- */
+  .banner { background: #adccf0; line-height: 0; }
+  .banner a { display: block; }
+  .banner img {
+    display: block; width: 100%;
+    /* cropped from the centre, so the logo stays visible on narrow phones */
+    height: clamp(120px, 17vw, 240px);
+    object-fit: cover; object-position: center;
   }
-  .socials { display: flex; gap: 18px; }
+
+  /* ---------- Social links ---------- */
+  .socials {
+    display: flex; justify-content: center; flex-wrap: wrap; gap: 14px;
+    padding: 12px 16px;
+    background: #adccf0;
+    border-bottom: 2px solid #8d94a0;
+  }
   .social {
-    width: 62px; height: 62px; border-radius: 50%;
+    width: 46px; height: 46px; border-radius: 50%;
     background: #0a1fe0; color: #fff;
     display: grid; place-items: center;
-    font-weight: 700; font-size: 1.3rem;
+    font-weight: 700; font-size: 1.1rem;
     box-shadow: 0 3px 8px rgba(0,0,0,.25);
     transition: transform .15s;
   }
   .social:hover { transform: scale(1.12); }
-  .logo { text-align: center; position: relative; }
-  .logo h1 {
-    display: inline-block;
-    font-family: 'Silkscreen', monospace; font-weight: 700;
-    font-size: clamp(1.6rem, 4.5vw, 3.2rem);
-    background: #333; color: #fff; padding: 6px 16px;
-    letter-spacing: .05em;
-  }
-  .logo h2 {
-    font-family: 'Silkscreen', monospace; color: #fff;
-    font-size: clamp(1.6rem, 4vw, 3rem);
-    text-shadow: 2px 2px 0 rgba(0,0,0,.25);
-    letter-spacing: .1em;
-  }
-  .cursor {
-    position: absolute; right: -30px; bottom: -28px; width: 70px;
-    filter: drop-shadow(2px 3px 0 rgba(0,0,0,.4));
-    pointer-events: none;
-  }
 
   /* ---------- Main nav ---------- */
   .mainnav {
@@ -193,13 +178,24 @@
     font-size: .65rem; color: var(--blue-mid); font-weight: 700;
   }
 
-  /* ---------- Mobile: sihhhhhhhdebar slides over content ---------- */
+  /* ---------- Mobile: sidebar slides over content ---------- */
   @media (max-width: 760px) {
+    :root { --sidebar-w: min(270px, 78vw); }
+    .topbar { justify-content: flex-end; padding: 6px 12px; font-size: .7rem; }
     .topbar .search { display: none; }
+    .socials { gap: 10px; padding: 10px; }
+    .social { width: 40px; height: 40px; font-size: 1rem; }
+    .mainnav {
+      display: grid; grid-template-columns: repeat(3, 1fr);
+      text-align: center; gap: 2px; padding: 6px; font-size: .7rem;
+    }
+    .mainnav a { padding: 8px 4px; }
     .sidebar { position: absolute; top: 0; bottom: 0; left: 0; z-index: 10; }
-    .content { padding: 14px 14px 40px 44px; }
-    .social { width: 46px; height: 46px; font-size: 1rem; }
-    .cursor { display: none; }
+    .content { padding: 12px 12px 32px 42px; }
+    .content > h4 { font-size: .8rem; }
+    .win { border-radius: 14px; margin-bottom: 24px; }
+    .win-body.art { min-height: 240px; font-size: 1.4rem; }
+    .hand { font-size: 1.4rem; }
   }
 </style>
 </head>
@@ -210,27 +206,18 @@
   <nav><a href="#">Home</a><a href="#">Contact us</a></nav>
 </div>
 
-<header>
-  <div class="socials">
-    <a class="social" href="#" aria-label="Facebook">f</a>
-    <a class="social" href="#" aria-label="Instagram">ig</a>
-    <a class="social" href="#" aria-label="Twitter">t</a>
-  </div>
-
-  <div class="logo">
-    <h1>Karokimachine</h1>
-    <h2>Games</h2>
-    <svg class="cursor" viewBox="0 0 12 19" shape-rendering="crispEdges">
-      <path d="M0 0h2v2h1v2h1v2h1v2h1v2h1v2h2v2H8v1H7v1H6v-1H5v-1H4v-1H3v1H2v1H1v-1H0z" fill="#fff" stroke="#000" stroke-width=".6"/>
-    </svg>
-  </div>
-
-  <div class="socials">
-    <a class="social" href="#" aria-label="TikTok">♪</a>
-    <a class="social" href="#" aria-label="YouTube">▶</a>
-    <a class="social" href="#" aria-label="Pinterest">p</a>
-  </div>
+<header class="banner">
+  <a href="#"><img src="banner.png" alt="Karokimachine Games"></a>
 </header>
+
+<div class="socials">
+  <a class="social" href="#" aria-label="Facebook">f</a>
+  <a class="social" href="#" aria-label="Instagram">ig</a>
+  <a class="social" href="#" aria-label="Twitter">t</a>
+  <a class="social" href="#" aria-label="TikTok">♪</a>
+  <a class="social" href="#" aria-label="YouTube">▶</a>
+  <a class="social" href="#" aria-label="Pinterest">p</a>
+</div>
 
 <nav class="mainnav">
   <a href="#">About us</a>

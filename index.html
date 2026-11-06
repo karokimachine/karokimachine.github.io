@@ -12,7 +12,6 @@
     --blue-mid: #2a5aa8;
     --blue-dark: #12356e;
     --ink: #3b4350;
-    --sidebar-w: 270px;
     --rail-w: 96px;
   }
   * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -21,14 +20,10 @@
 
   /* ---------- Top silver utility bar ---------- */
   .topbar {
-    display: flex; align-items: center; justify-content: space-between; gap: 16px;
+    display: flex; align-items: center; justify-content: flex-end; gap: 16px;
     padding: 6px 16px; background: linear-gradient(#f3f4f6, #c9cdd4);
     border-bottom: 2px solid #8d94a0;
     font-size: .8rem; letter-spacing: .08em; text-transform: uppercase;
-  }
-  .search {
-    flex: 1; max-width: 620px; margin: 0 auto 0 30%; height: 14px; border-radius: 10px;
-    border: 1px solid #aaa; background: linear-gradient(#fff, #eee); box-shadow: inset 0 1px 3px rgba(0,0,0,.2);
   }
   .topbar nav { display: flex; gap: 20px; }
   .topbar a:hover { color: var(--blue-mid); }
@@ -36,8 +31,8 @@
   /* ---------- Animated hero banner ---------- */
   .hero {
     position: relative; overflow: hidden; isolation: isolate;
-    min-height: clamp(170px, 19vw, 250px);
-    display: grid; place-items: center; text-align: center; padding: 16px 16px 20px;
+    min-height: clamp(170px, 16vw, 230px);
+    display: grid; place-items: center; text-align: center; padding: 28px 16px 32px;
     background:
       radial-gradient(ellipse 38% 95% at 80% 35%, rgba(255,255,255,.6), transparent 70%),
       radial-gradient(ellipse 30% 80% at 12% 75%, rgba(150,195,255,.45), transparent 70%),
@@ -59,21 +54,36 @@
   @keyframes gridscroll { to { background-position: 16px 0, 16px 0, 0 0, 0 0; } }
 
   .hero-text { position: relative; z-index: 2; font: inherit; }
-  .kicker {
-    display: block; font-weight: 500; font-size: clamp(.75rem, 1.6vw, 1.2rem);
-    letter-spacing: .4em; padding-left: .4em; color: #e8effc;
-    text-shadow: 0 1px 3px rgba(0,20,70,.65); opacity: 0;
-  }
-  .title {
-    display: block; margin-top: .3em; font-weight: 900; line-height: 1.1; letter-spacing: .04em;
-    font-size: clamp(1.6rem, 3.4vw, 3.6rem);
-    /* silver metal */
-    background: linear-gradient(105deg, #7d8798 0%, #dfe5ee 28%, #ffffff 42%, #aeb7c6 55%, #eef2f7 70%, #7d8798 100%);
-    background-size: 250% 100%;
+
+  /* chrome stroke: two stacked copies of the text. The back copy carries a thick
+     transparent stroke filled with a chrome gradient; the front copy is the normal fill. */
+  .chrome { display: grid; }
+  .chrome > .layer { grid-area: 1 / 1; display: block; }
+  .chrome > .back {
+    -webkit-text-stroke: .12em transparent;
+    background: linear-gradient(180deg, #f5f8fd 0%, #9fb0cc 38%, #1c2b4d 54%, #7e92b8 66%, #dfe7f4 100%);
     -webkit-background-clip: text; background-clip: text;
     color: transparent; -webkit-text-fill-color: transparent;
-    filter: drop-shadow(0 2px 0 rgba(8,28,80,.6)) drop-shadow(0 5px 12px rgba(0,20,80,.5));
+  }
+
+  .kicker {
+    font-weight: 500; font-size: clamp(.7rem, 1.2vw, .95rem);
+    letter-spacing: .3em; padding-left: .3em; opacity: 0;
+    filter: drop-shadow(0 1px 2px rgba(0,20,70,.7));
+  }
+  .kicker > .front { color: #e8effc; }
+  .title {
+    margin-top: .7em; font-weight: 900; line-height: 1.1; letter-spacing: .04em;
+    font-size: clamp(1.3rem, 2.6vw, 2.5rem);
+    filter: drop-shadow(0 2px 6px rgba(0,20,80,.55));
     clip-path: inset(-30% 100% -30% -5%);
+  }
+  .title > .back { -webkit-text-stroke-width: .075em; }
+  /* silver metal fill */
+  .title > .front {
+    background: linear-gradient(180deg, #ffffff 0%, #dfe5ee 45%, #aeb7c6 100%);
+    -webkit-background-clip: text; background-clip: text;
+    color: transparent; -webkit-text-fill-color: transparent;
   }
   /* silver flash that sweeps across the whole banner */
   .hero .flash {
@@ -82,14 +92,13 @@
     transform: translateX(-110%);
   }
   .hero.play .kicker { animation: kicker 1s ease-out .25s forwards; }
-  .hero.play .title  { animation: wipe 1.2s cubic-bezier(.2,.8,.2,1) .95s forwards, sheen 5s linear 2.4s infinite; }
+  .hero.play .title  { animation: wipe 1.2s cubic-bezier(.2,.8,.2,1) .95s forwards; }
   .hero.play .flash  { animation: flash 9s ease-in-out 1.7s infinite; }
-  @keyframes kicker { from { opacity: 0; transform: translateY(-16px); letter-spacing: 1.1em; } to { opacity: 1; transform: none; letter-spacing: .4em; } }
+  @keyframes kicker { from { opacity: 0; transform: translateY(-16px); letter-spacing: 1.1em; } to { opacity: 1; transform: none; letter-spacing: .3em; } }
   @keyframes wipe {
     from { clip-path: inset(-30% 100% -30% -5%); transform: translateX(-30px); }
     to   { clip-path: inset(-30% -5% -30% -5%);  transform: none; }
   }
-  @keyframes sheen { from { background-position: 150% 0; } to { background-position: -100% 0; } }
   @keyframes flash { 0% { transform: translateX(-110%); } 12%, 100% { transform: translateX(110%); } }
   @media (prefers-reduced-motion: reduce) {
     .hero::before, .hero.play .kicker, .hero.play .title, .hero.play .flash { animation: none; }
@@ -98,7 +107,7 @@
   }
 
   .pro-email {
-    position: absolute; top: 14px; right: 18px; z-index: 3; line-height: 1.4;
+    position: absolute; top: 8px; right: 18px; z-index: 3; line-height: 1.4;
     font-size: .75rem; letter-spacing: .06em; color: var(--blue-dark);
     background: rgba(255,255,255,.7); padding: 4px 12px; border-radius: 12px;
   }
@@ -108,49 +117,13 @@
   .mainnav {
     display: flex; justify-content: space-around; flex-wrap: wrap;
     background: linear-gradient(#e6e8ec, #bfc4cc); border-bottom: 2px solid #8d94a0;
-    padding: 8px 10px; text-transform: uppercase; font-size: .95rem; letter-spacing: .08em;
+    padding: 3px 10px; text-transform: uppercase; font-size: .85rem; letter-spacing: .08em;
   }
-  .mainnav a { padding: 4px 10px; border-radius: 4px; }
+  .mainnav a { padding: 2px 10px; border-radius: 4px; }
   .mainnav a:hover, .mainnav a.active { background: rgba(255,255,255,.75); color: var(--blue-mid); }
 
   /* ---------- Layout ---------- */
   .layout { display: flex; align-items: stretch; position: relative; min-height: 70vh; }
-
-  /* ---------- Clickable sidebar ---------- */
-  .sidebar {
-    width: var(--sidebar-w); flex-shrink: 0;
-    background: linear-gradient(180deg, #1f4180 0%, #14367a 50%, #0c2a5e 100%);
-    box-shadow: inset -1px 0 0 rgba(255,255,255,.2);
-    color: #fff; text-transform: uppercase; overflow: hidden;
-    transition: width .35s ease; position: relative;
-  }
-  .sidebar.collapsed { width: 0; }
-  .sidebar-inner { width: var(--sidebar-w); padding: 18px 14px 40px; }
-  .sidebar h3 { font-size: 1.5rem; margin-bottom: 28px; }
-  .group { margin-bottom: 22px; }
-  .group-btn {
-    all: unset; cursor: pointer; display: flex; justify-content: space-between; align-items: center;
-    width: 100%; font-family: inherit; font-weight: 500; font-size: 1.1rem; padding: 6px 4px; letter-spacing: .05em;
-  }
-  .group-btn:hover { color: #9ec5ff; }
-  .group-btn .arrow { transition: transform .25s; font-size: .8rem; }
-  .group.open .arrow { transform: rotate(90deg); }
-  .group ul { list-style: none; max-height: 0; overflow: hidden; transition: max-height .3s ease; }
-  .group.open ul { max-height: 200px; }
-  .group li a {
-    display: block; padding: 6px 4px 6px 22px; font-size: 1.05rem; position: relative;
-    border-radius: 4px; transition: background .15s, padding-left .15s;
-  }
-  .group li a::before { content: '•'; position: absolute; left: 6px; }
-  .group li a:hover { background: rgba(255,255,255,.12); padding-left: 28px; }
-
-  .toggle {
-    position: absolute; top: 14px; left: 0; z-index: 20; width: 30px; height: 56px; border: 0; cursor: pointer;
-    border-radius: 0 8px 8px 0; background: linear-gradient(#f3f4f6, #b9bfc9);
-    box-shadow: 2px 2px 6px rgba(0,0,0,.3); color: var(--blue-dark); font-size: 1rem; font-weight: 700;
-    transition: left .35s ease;
-  }
-  .sidebar:not(.collapsed) ~ .toggle { left: var(--sidebar-w); }
 
   /* ---------- Stage: content + right rail, with drifting dots ---------- */
   .stage {
@@ -161,8 +134,7 @@
     animation: drift 9s linear infinite;
   }
   @keyframes drift { to { background-position: 12px 12px, -38px 38px; } }
-  .content { flex: 1; min-width: 0; padding: 14px 20px 40px 48px; }
-  .content h4 { font-size: .95rem; letter-spacing: .08em; text-transform: uppercase; margin-bottom: 16px; }
+  .content { flex: 1; min-width: 0; padding: 14px 20px 40px 24px; }
 
   /* views (one per nav page) */
   .view { display: none; }
@@ -202,20 +174,21 @@
     background: linear-gradient(#dfe2e7, #bcc2cb); font-size: .65rem; color: var(--blue-mid); font-weight: 700;
   }
 
-  /* ---------- Home: big game buttons ---------- */
-  .big-buttons { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; max-width: 780px; margin: 0 auto 40px; }
+  /* ---------- Home: game buttons ---------- */
+  .big-buttons { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; max-width: 420px; margin: 0 auto 32px; }
   .big-btn {
-    position: relative; display: grid; place-items: center; text-align: center; min-height: 84px; padding: 14px;
-    border-radius: 16px; color: #fff; font-weight: 700; font-size: clamp(.8rem, 1.8vw, 1.15rem);
-    letter-spacing: .06em; text-transform: uppercase; overflow: hidden;
+    position: relative; display: grid; place-items: center; text-align: center; min-height: 46px; padding: 8px 10px;
+    border-radius: 12px; color: #fff; font-weight: 700; font-size: clamp(.6rem, 1.2vw, .8rem);
+    letter-spacing: .05em; text-transform: uppercase; overflow: hidden;
     background: linear-gradient(#7fa9ee, #2a5aa8 55%, #1e4a8c); border: 2px solid #fff;
-    box-shadow: 0 3px 8px rgba(0,0,0,.3), inset 0 -3px 6px rgba(0,0,30,.25); text-shadow: 0 1px 2px rgba(0,0,0,.4);
+    box-shadow: 0 2px 6px rgba(0,0,0,.3), inset 0 -2px 5px rgba(0,0,30,.25); text-shadow: 0 1px 2px rgba(0,0,0,.4);
     transition: transform .15s, filter .15s;
   }
   .big-btn.alt { background: linear-gradient(#ffb6df, #e0589f 55%, #b53a7e); }
+  .big-btn.discord { grid-column: 1 / -1; background: linear-gradient(#8f9bff, #5865f2 55%, #3c47c4); }
   .big-btn::before { content: ''; position: absolute; left: 0; right: 0; top: 0; height: 48%; background: linear-gradient(rgba(255,255,255,.55), rgba(255,255,255,.08)); }
   .big-btn span { position: relative; }
-  .big-btn:hover { transform: translateY(-3px); filter: brightness(1.1); }
+  .big-btn:hover { transform: translateY(-2px); filter: brightness(1.1); }
 
   /* ---------- Games / team ---------- */
   .team { display: grid; grid-template-columns: repeat(auto-fit, minmax(110px, 1fr)); gap: 18px; width: 100%; text-align: center; }
@@ -275,36 +248,31 @@
 
   /* ---------- Mobile ---------- */
   @media (max-width: 760px) {
-    :root { --sidebar-w: min(270px, 78vw); }
-    .topbar { justify-content: flex-end; padding: 6px 12px; font-size: .7rem; }
-    .topbar .search { display: none; }
-    .hero { padding: 14px 10px 40px; min-height: 190px; }
+    .topbar { padding: 6px 12px; font-size: .7rem; }
+    .hero { padding: 30px 10px 46px; min-height: 170px; }
     .pro-email { top: auto; bottom: 9px; right: auto; left: 50%; transform: translateX(-50%); font-size: .62rem; white-space: nowrap; }
-    .mainnav { display: grid; grid-template-columns: repeat(3, 1fr); text-align: center; gap: 2px; padding: 6px; font-size: .7rem; }
-    .mainnav a { padding: 8px 4px; }
-    .sidebar { position: absolute; top: 0; bottom: 0; left: 0; z-index: 10; }
+    .mainnav { display: grid; grid-template-columns: repeat(3, 1fr); text-align: center; gap: 2px; padding: 3px 6px; font-size: .68rem; }
+    .mainnav a { padding: 5px 4px; }
     .stage { flex-direction: column; align-items: stretch; }
-    .content { padding: 12px 12px 32px 42px; }
-    .content h4 { font-size: .8rem; }
-    .rail.win { order: -1; position: static; width: auto; margin: 10px 12px 0 42px; }
+    .content { padding: 12px 12px 32px; }
+    .rail.win { order: -1; position: static; width: auto; margin: 10px 12px 0; }
     .rail-body { flex-direction: row; flex-wrap: wrap; justify-content: center; gap: 10px; padding: 10px; }
     .social { width: 40px; height: 40px; font-size: 1rem; }
     .win { border-radius: 14px; margin-bottom: 24px; }
     .win-body.art { min-height: 240px; font-size: 1.4rem; }
     .hand { font-size: 1.4rem; }
-    .big-buttons { grid-template-columns: 1fr; margin-bottom: 28px; }
+    .big-buttons { margin-bottom: 24px; }
   }
   @media (max-width: 560px) {
-    .title { font-size: 6.6vw; }
+    .title { font-size: 5.6vw; }
     .title .t2 { display: block; }
-    .kicker { font-size: .7rem; }
+    .kicker { font-size: .62rem; }
   }
 </style>
 </head>
 <body>
 
 <div class="topbar">
-  <div class="search" aria-hidden="true"></div>
   <nav>
     <a href="#home">Home</a>
     <!-- TODO: your real contact email -->
@@ -315,8 +283,14 @@
 <header class="hero play" id="hero">
   <div class="flash" aria-hidden="true"></div>
   <h1 class="hero-text">
-    <span class="kicker">welcome to</span>
-    <span class="title"><span class="t1">home of </span><span class="t2">KarokiMachine</span></span>
+    <span class="kicker chrome">
+      <span class="layer back" aria-hidden="true">welcome to the</span>
+      <span class="layer front">welcome to the</span>
+    </span>
+    <span class="title chrome">
+      <span class="layer back" aria-hidden="true"><span class="t1">home of </span><span class="t2">KarokiMachine</span></span>
+      <span class="layer front"><span class="t1">home of </span><span class="t2">KarokiMachine</span></span>
+    </span>
   </h1>
   <!-- TODO: put your professional email here -->
   <a class="pro-email" href="mailto:you@example.com">you@example.com</a>
@@ -326,39 +300,13 @@
   <!-- TODO: swap in your real itch.io page URL -->
   <a href="https://itch.io" target="_blank" rel="noopener">About us</a>
   <a href="#games">Games</a>
-  <a href="#devlog">Dev-log</a>
+  <a href="#devlog">Timeline</a>
   <a href="#faq">FAQ</a>
-  <a href="#specials">Specials</a>
-  <a href="#gallery">IDFK-SMT else</a>
+  <a href="#specials">Merch</a>
+  <a href="#gallery">Gallery</a>
 </nav>
 
 <div class="layout">
-  <aside class="sidebar" id="sidebar">
-    <div class="sidebar-inner">
-      <h3>New!</h3>
-
-      <div class="group open">
-        <button class="group-btn">Execute&gt;Loop <span class="arrow">▶</span></button>
-        <ul>
-          <li><a href="#execute-loop">Game</a></li>
-          <li><a href="#devlog">Updates</a></li>
-          <li><a href="#specials">Merch</a></li>
-        </ul>
-      </div>
-
-      <div class="group open">
-        <button class="group-btn">Cure-Yume-Chan <span class="arrow">▶</span></button>
-        <ul>
-          <li><a href="#cure-yume-chan">Game</a></li>
-          <li><a href="#devlog">Updates</a></li>
-          <li><a href="#specials">Merch</a></li>
-        </ul>
-      </div>
-    </div>
-  </aside>
-
-  <button class="toggle" id="toggle" aria-label="Toggle sidebar" aria-expanded="true">◀</button>
-
   <div class="stage">
     <main class="content">
 
@@ -373,14 +321,14 @@
         </section>
 
         <div class="big-buttons">
+          <!-- TODO: swap in your real Discord invite link -->
+          <a class="big-btn discord" href="https://discord.com" target="_blank" rel="noopener"><span>Discord</span></a>
           <a class="big-btn" href="#execute-loop"><span>Execute&gt;Loop</span></a>
           <a class="big-btn alt" href="#cure-yume-chan"><span>Cure-Yume-Chan</span></a>
         </div>
 
-        <h4>Weekly prompt submissions and fanarts</h4>
-
         <section class="win">
-          <div class="win-title">@user</div>
+          <div class="win-title">Weekly prompt submissions and fanarts ▸ @user</div>
           <div class="win-body art"><div>Art<br><span class="hand">(or whatev)</span></div></div>
           <div class="win-foot"></div>
         </section>
@@ -406,9 +354,8 @@
 
       <!-- ===== GAMES: explanations + team ===== -->
       <div class="view" id="games">
-        <h4>Games</h4>
         <section class="win" id="execute-loop">
-          <div class="win-title">Execute&gt;Loop</div>
+          <div class="win-title">Games ▸ Execute&gt;Loop</div>
           <div class="win-body text"><p>Game explanation goes here: what it is, how it plays, platforms, release status.</p></div>
           <div class="win-foot"></div>
         </section>
@@ -432,7 +379,6 @@
 
       <!-- ===== DEV-LOG: scrollable timeline ===== -->
       <div class="view" id="devlog">
-        <h4>Dev-log</h4>
         <section class="win">
           <div class="win-title">Timeline</div>
           <div class="win-body scroll">
@@ -451,9 +397,8 @@
 
       <!-- ===== FAQ: ask the machine ===== -->
       <div class="view" id="faq">
-        <h4>FAQ: ask the machine</h4>
         <section class="win">
-          <div class="win-title">Questions</div>
+          <div class="win-title">FAQ: ask the machine</div>
           <div class="win-body text">
             <div class="faq">
               <button class="faq-q" aria-expanded="false">Where can I play the games? <span>+</span></button>
@@ -470,9 +415,8 @@
 
       <!-- ===== SPECIALS: merch ===== -->
       <div class="view" id="specials">
-        <h4>Merch</h4>
         <section class="win">
-          <div class="win-title">Shop</div>
+          <div class="win-title">Merch</div>
           <div class="win-body">
             <div class="grid">
               <div class="tile"><div class="ph">Merch</div>Item name<em>Coming soon</em></div>
@@ -487,9 +431,8 @@
 
       <!-- ===== GALLERY of art ===== -->
       <div class="view" id="gallery">
-        <h4>Gallery</h4>
         <section class="win">
-          <div class="win-title">Gallery of art</div>
+          <div class="win-title">Gallery</div>
           <div class="win-body">
             <div class="grid">
               <div class="tile"><div class="ph">Art</div>Title</div>
@@ -531,22 +474,6 @@
 
 <script>
   const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
-  const isMobile = () => window.innerWidth <= 760;
-
-  /* ----- sidebar ----- */
-  const sidebar = document.getElementById('sidebar');
-  const toggle  = document.getElementById('toggle');
-  function setSidebar(open) {
-    sidebar.classList.toggle('collapsed', !open);
-    toggle.textContent = open ? '◀' : '▶';
-    toggle.setAttribute('aria-expanded', open);
-  }
-  toggle.addEventListener('click', () => setSidebar(sidebar.classList.contains('collapsed')));
-  if (isMobile()) setSidebar(false);
-  document.querySelectorAll('.group-btn').forEach(btn =>
-    btn.addEventListener('click', () => btn.parentElement.classList.toggle('open')));
-  sidebar.querySelectorAll('a').forEach(a =>
-    a.addEventListener('click', () => { if (isMobile()) setSidebar(false); }));
 
   /* ----- page routing: one view per nav item ----- */
   const views = [...document.querySelectorAll('.view')];

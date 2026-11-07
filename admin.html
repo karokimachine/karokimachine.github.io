@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex">
+<title>KM Games – Content Manager</title>
+<style>
+  * { box-sizing: border-box; }
+  body { font-family: system-ui, sans-serif; background: #eef3fb; color: #2b3445; margin: 0; padding: 24px 14px 60px; }
+  main { max-width: 760px; margin: 0 auto; }
+  h1 { font-size: 1.4rem; color: #12356e; } h2 { font-size: 1.05rem; margin: 0 0 12px; color: #12356e; }
+  .card { background: #fff; border: 1px solid #c9d4e6; border-radius: 14px; padding: 18px; margin-bottom: 18px; box-shadow: 0 2px 6px rgba(20,40,90,.08); }
+  label { display: block; font-size: .8rem; font-weight: 600; margin: 10px 0 4px; }
+  input[type=text], input[type=password], input[type=file], textarea { width: 100%; padding: 9px 10px; border: 1px solid #b6c3da; border-radius: 8px; font: inherit; background: #fff; }
+  .row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; } @media (max-width: 560px) { .row { grid-template-columns: 1fr; } }
+  button { background: linear-gradient(#6a9aea, #2a5aa8); color: #fff; border: 0; border-radius: 10px; padding: 10px 18px; font: inherit; font-weight: 600; cursor: pointer; margin-top: 14px; }
+  button.ghost { background: #e3e9f4; color: #12356e; } button.danger { background: #c0392b; padding: 6px 12px; margin: 0; font-size: .8rem; }
+  button:disabled { opacity: .5; cursor: wait; }
+  .tabs { display: flex; gap: 8px; margin-bottom: 14px; } .tabs button { margin: 0; }
+  .tabs button.on { background: linear-gradient(#6a9aea, #2a5aa8); color: #fff; }
+  .item { display: flex; gap: 12px; align-items: center; padding: 10px 0; border-top: 1px solid #e3e9f4; }
+  .item img { width: 64px; height: 64px; object-fit: cover; border-radius: 8px; background: #e3e9f4; flex: none; }
+  .item div { flex: 1; min-width: 0; font-size: .85rem; overflow-wrap: anywhere; } .item small { color: #6b778c; }
+  #log { font-size: .85rem; white-space: pre-wrap; background: #12203a; color: #cfe0ff; border-radius: 10px; padding: 12px; min-height: 44px; }
+  .hint { font-size: .78rem; color: #6b778c; margin-top: 6px; }
+  #preview { max-width: 180px; max-height: 180px; margin-top: 10px; border-radius: 8px; display: none; }
+</style>
+</head>
+<body>
+<main>
+  <h1>KarokiMachine Games – Content Manager</h1>
+
+  <section class="card" id="connect">
+    <h2>1. Connect to GitHub</h2>
+    <div class="row">
+      <div><label>GitHub username / organisation</label><input type="text" id="owner" placeholder="e.g. karokimachine"></div>
+      <div><label>Repository name</label><input type="text" id="repo" placeholder="e.g. karokimachine.com"></div>
+    </div>
+    <div class="row">
+      <div><label>Branch</label><input type="text" id="branch" value="main"></div>
+      <div><label>Access token</label><input type="password" id="token" placeholder="github_pat_..."></div>
+    </div>
+    <p class="hint">Saved only in this browser. Use a fine-grained token limited to this one repository with “Contents: Read and write”.</p>
+    <button id="connectBtn">Save &amp; load content</button>
+  </section>
+
+  <section class="card" id="manager" hidden>
+    <div class="tabs"><button id="tabWeekly" class="on">Weekly submissions</button><button id="tabGallery" class="ghost">Gallery</button></div>
+
+    <div id="weeklyPane">
+      <label>Weekly heading (shown on the first panel)</label>
+      <input type="text" id="heading">
+      <button class="ghost" id="saveHeading">Save heading</button>
+      <h2 style="margin-top:22px">Add a submission</h2>
+      <label>Image</label><input type="file" id="wFile" accept="image/*">
+      <div class="row">
+        <div><label>Username</label><input type="text" id="wUser" placeholder="@user"></div>
+        <div><label>Caption (optional)</label><input type="text" id="wCaption"></div>
+      </div>
+      <button id="wAdd">Upload submission</button>
+      <h2 style="margin-top:22px">Current submissions</h2>
+      <div id="wList"></div>
+      <button class="danger" id="wClear" style="margin-top:14px">Clear all (new week)</button>
+    </div>
+
+    <div id="galleryPane" hidden>
+      <h2>Add an artwork</h2>
+      <label>Image</label><input type="file" id="gFile" accept="image/*">
+      <div class="row">
+        <div><label>Title</label><input type="text" id="gTitle"></div>
+        <div><label>Artist (optional)</label><input type="text" id="gArtist" placeholder="@user"></div>
+      </div>
+      <button id="gAdd">Upload artwork</button>
+      <h2 style="margin-top:22px">Current gallery</h2>
+      <div id="gList"></div>
+    </div>
+  </section>
+
+  <section class="card"><h2>Status</h2><div id="log">Ready.</div>
+    <p class="hint">After each change, GitHub Pages takes about a minute to update the live site.</p></section>
+</main>
+
+<script>
+const $ = id => document.getElementById(id);
+const KEY = 'km-admin';
+let cfg = {};
+try { cfg = JSON.parse(localStorage.getItem(KEY) || '{}'); } catch (e) {}
+['owner','repo','branch','token'].forEach(k => { if (cfg[k]) $(k).value = cfg[k]; });
+
+const log = m => { $('log').textContent = m; };
+function busy(on) { document.querySelectorAll('button').forEach(b => b.disabled = on); }
+
+function conf() {
+  cfg = { owner: $('owner').value.trim(), repo: $('repo').value.trim(), branch: $('branch').value.trim() || 'main', token: $('token').value.trim() };
+  try { localStorage.setItem(KEY, JSON.stringify(cfg)); } catch (e) {}
+  return cfg;
+}
+async function api(path, opts = {}) {
+  const r = await fetch(`https://api.github.com/repos/${cfg.owner}/${cfg.repo}/${path}`, {
+    ...opts, headers: { Authorization: 'Bearer ' + cfg.token, Accept: 'application/vnd.github+json', 'Content-Type': 'application/json' }
+  });
+  if (r.status === 404 && (opts.method || 'GET') === 'GET') return null;
+  if (!r.ok) throw new Error('GitHub said ' + r.status + ': ' + ((await r.json().catch(() => ({}))).message || r.statusText));
+  return r.json();
+}
+const enc = s => btoa(unescape(encodeURIComponent(s)));
+const dec = b => decodeURIComponent(escape(atob(b.replace(/\n/g, ''))));
+const getFile = p => api(`contents/${p}?ref=${encodeURIComponent(cfg.branch)}`);
+const putFile = (p, b64, msg, sha) => api(`contents/${p}`, { method: 'PUT', body: JSON.stringify({ message: msg, content: b64, branch: cfg.branch, ...(sha ? { sha } : {}) }) });
+async function delFile(p, msg) { const f = await getFile(p); if (f) await api(`contents/${p}`, { method: 'DELETE', body: JSON.stringify({ message: msg, sha: f.sha, branch: cfg.branch }) }); }
+
+// read-modify-write a JSON file, always on the latest version
+async function editJSON(path, fallback, fn, msg) {
+  const f = await getFile(path);
+  const data = f ? JSON.parse(dec(f.content)) : fallback;
+  fn(data);
+  await putFile(path, enc(JSON.stringify(data, null, 2) + '\n'), msg, f && f.sha);
+  return data;
+}
+const readJSON = async (p, fb) => { const f = await getFile(p); return f ? JSON.parse(dec(f.content)) : fb; };
+
+// resize big images so the site stays fast
+const toB64 = blob => new Promise(res => { const r = new FileReader(); r.onload = () => res(r.result.split(',')[1]); r.readAsDataURL(blob); });
+async function prepImage(file) {
+  if (/gif|svg/.test(file.type)) return { b64: await toB64(file), ext: file.name.split('.').pop().toLowerCase() };
+  const bmp = await createImageBitmap(file);
+  const k = Math.min(1, 1600 / Math.max(bmp.width, bmp.height));
+  const c = document.createElement('canvas'); c.width = Math.round(bmp.width * k); c.height = Math.round(bmp.height * k);
+  const g = c.getContext('2d'); const png = file.type === 'image/png';
+  if (!png) { g.fillStyle = '#fff'; g.fillRect(0, 0, c.width, c.height); }
+  g.drawImage(bmp, 0, 0, c.width, c.height);
+  const blob = await new Promise(r => c.toBlob(r, png ? 'image/png' : 'image/jpeg', .9));
+  return { b64: await toB64(blob), ext: png ? 'png' : 'jpg' };
+}
+const slug = s => (s || 'art').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '').slice(0, 30) || 'art';
+
+async function uploadImage(file, folder, name) {
+  const { b64, ext } = await prepImage(file);
+  const path = `images/${folder}/${Date.now()}-${slug(name)}.${ext}`;
+  await putFile(path, b64, `Add image ${path}`);
+  return path;
+}
+
+function renderList(box, rows, onDelete) {
+  box.textContent = '';
+  if (!rows.length) { box.textContent = 'Nothing here yet.'; return; }
+  rows.forEach((r, i) => {
+    const d = document.createElement('div'); d.className = 'item';
+    const img = document.createElement('img'); img.src = r.image; img.onerror = () => { img.style.visibility = 'hidden'; };
+    const t = document.createElement('div'); t.textContent = r.label; const sm = document.createElement('small'); sm.textContent = r.sub || ''; t.appendChild(document.createElement('br')); t.appendChild(sm);
+    const b = document.createElement('button'); b.className = 'danger'; b.textContent = 'Delete'; b.onclick = () => onDelete(i);
+    d.append(img, t, b); box.appendChild(d);
+  });
+}
+
+async function refresh() {
+  const w = await readJSON('content/weekly.json', { heading: 'Weekly prompt submissions and fanarts', entries: [] });
+  $('heading').value = w.heading || '';
+  renderList($('wList'), w.entries.map(e => ({ image: e.image, label: e.user, sub: e.caption })), async i => {
+    if (!confirm('Delete this submission?')) return;
+    busy(true); try {
+      let gone; await editJSON('content/weekly.json', w, d => { gone = d.entries.splice(i, 1)[0]; }, 'Remove weekly submission');
+      if (gone) await delFile(gone.image, 'Remove image').catch(() => {});
+      log('Deleted.'); await refresh();
+    } catch (e) { log('Error: ' + e.message); } busy(false);
+  });
+  const g = await readJSON('content/gallery.json', { items: [] });
+  renderList($('gList'), g.items.map(e => ({ image: e.image, label: e.title, sub: e.artist })), async i => {
+    if (!confirm('Delete this artwork?')) return;
+    busy(true); try {
+      let gone; await editJSON('content/gallery.json', g, d => { gone = d.items.splice(i, 1)[0]; }, 'Remove gallery item');
+      if (gone) await delFile(gone.image, 'Remove image').catch(() => {});
+      log('Deleted.'); await refresh();
+    } catch (e) { log('Error: ' + e.message); } busy(false);
+  });
+}
+
+$('connectBtn').onclick = async () => {
+  conf(); busy(true);
+  try { log('Connecting…'); await refresh(); $('manager').hidden = false; log('Connected. Content loaded.'); }
+  catch (e) { log('Could not connect: ' + e.message); }
+  busy(false);
+};
+$('tabWeekly').onclick = () => { $('weeklyPane').hidden = false; $('galleryPane').hidden = true; $('tabWeekly').className = 'on'; $('tabGallery').className = 'ghost'; };
+$('tabGallery').onclick = () => { $('weeklyPane').hidden = true; $('galleryPane').hidden = false; $('tabGallery').className = 'on'; $('tabWeekly').className = 'ghost'; };
+
+$('saveHeading').onclick = async () => {
+  busy(true); try { await editJSON('content/weekly.json', { heading: '', entries: [] }, d => { d.heading = $('heading').value.trim(); }, 'Update weekly heading'); log('Heading saved.'); }
+  catch (e) { log('Error: ' + e.message); } busy(false);
+};
+$('wAdd').onclick = async () => {
+  const f = $('wFile').files[0], user = $('wUser').value.trim();
+  if (!f || !user) return log('Pick an image and enter a username.');
+  busy(true); try {
+    log('Uploading image…'); const image = await uploadImage(f, 'weekly', user);
+    log('Updating list…'); await editJSON('content/weekly.json', { heading: 'Weekly prompt submissions and fanarts', entries: [] },
+      d => { d.entries.push({ user, image, caption: $('wCaption').value.trim() }); }, `Add weekly submission by ${user}`);
+    $('wFile').value = ''; $('wUser').value = ''; $('wCaption').value = '';
+    log('Done! The live site updates in about a minute.'); await refresh();
+  } catch (e) { log('Error: ' + e.message); } busy(false);
+};
+$('wClear').onclick = async () => {
+  if (!confirm('Remove ALL weekly submissions (and their images)?')) return;
+  busy(true); try {
+    const w = await readJSON('content/weekly.json', { entries: [] });
+    await editJSON('content/weekly.json', w, d => { d.entries = []; }, 'Clear weekly submissions');
+    for (const e of w.entries) await delFile(e.image, 'Remove image').catch(() => {});
+    log('Cleared.'); await refresh();
+  } catch (e) { log('Error: ' + e.message); } busy(false);
+};
+$('gAdd').onclick = async () => {
+  const f = $('gFile').files[0], title = $('gTitle').value.trim();
+  if (!f || !title) return log('Pick an image and enter a title.');
+  busy(true); try {
+    log('Uploading image…'); const image = await uploadImage(f, 'gallery', title);
+    log('Updating list…'); await editJSON('content/gallery.json', { items: [] },
+      d => { d.items.unshift({ title, image, artist: $('gArtist').value.trim() }); }, `Add gallery item ${title}`);
+    $('gFile').value = ''; $('gTitle').value = ''; $('gArtist').value = '';
+    log('Done! The live site updates in about a minute.'); await refresh();
+  } catch (e) { log('Error: ' + e.message); } busy(false);
+};
+</script>
+</body>
+</html>

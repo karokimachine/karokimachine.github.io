@@ -157,11 +157,16 @@
 
   /* ---------- Gallery viewer ---------- */
   .lightbox {
-    position: fixed; inset: 0; z-index: 100; display: none; place-items: center; padding: 24px;
+    position: fixed; inset: 0; z-index: 100; display: none; align-items: center; justify-content: center; padding: 16px; box-sizing: border-box;
     background: rgba(10,20,40,.85); cursor: zoom-out;
   }
-  .lightbox.open { display: grid; }
-  .lightbox img { max-width: 100%; max-height: 100%; border-radius: 4px; box-shadow: 0 8px 24px rgba(0,0,0,.5); }
+  .lightbox.open { display: flex; }
+  .lightbox img {
+    width: auto; height: auto; object-fit: contain; display: block;
+    max-width: min(100%, 1400px); max-height: calc(100vh - 32px);
+    border-radius: 4px; box-shadow: 0 8px 24px rgba(0,0,0,.5);
+  }
+  @media (max-width: 560px) { .lightbox { padding: 8px; } .lightbox img { max-height: calc(100vh - 16px); } }
 
   /* ---------- Layout ---------- */
   .layout { display: flex; align-items: stretch; position: relative; flex: 1 0 auto; }

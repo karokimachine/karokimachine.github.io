@@ -11,7 +11,7 @@
     --blue-bright: #5b8fe3;
     --blue-mid: #2a5aa8;
     --blue-dark: #12356e;
-    --ink: #3b4350;
+    --ink: #6b7380;
     --rail-w: 96px;
   }
   * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -135,7 +135,7 @@
   .icon-row { display: grid; grid-template-columns: 1fr; gap: 14px; width: 100%; max-width: 560px; margin: 0 auto 36px; }
   .icon-btn {
     position: relative; display: flex; align-items: center; gap: 18px; min-height: 96px; padding: 14px 22px 14px 16px;
-    border-radius: 4px; color: var(--blue-dark); text-align: left; overflow: hidden;
+    border-radius: 4px; color: var(--ink); text-align: left; overflow: hidden;
     background: linear-gradient(#f4f5f7, #c8ccd3); border: 2px solid #fff;
     box-shadow: 0 4px 10px rgba(10,40,100,.3), inset 0 -3px 6px rgba(0,20,80,.12), inset 0 0 0 1px #fff;
     transition: transform .15s, filter .15s, box-shadow .15s; -webkit-tap-highlight-color: transparent;
@@ -146,7 +146,7 @@
   .icon-btn .social svg { width: 34px; height: 34px; }
   .icon-btn .label { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
   .icon-btn .label b { font-size: clamp(1rem, 4.6vw, 1.25rem); font-weight: 900; letter-spacing: .04em; line-height: 1.2; overflow-wrap: anywhere; }
-  .icon-btn .label small { font-size: clamp(.68rem, 3vw, .8rem); font-weight: 500; letter-spacing: .06em; text-transform: uppercase; color: #7a808a; line-height: 1.4; }
+  .icon-btn .label small { font-size: clamp(.68rem, 3vw, .8rem); font-weight: 500; letter-spacing: .06em; text-transform: uppercase; color: var(--ink); line-height: 1.4; }
   .icon-btn .arrow { margin-left: auto; flex: none; width: 24px; height: 24px; color: var(--blue-mid); }
   .icon-btn.cure .social { background: #d9a6d9; color: #f4f7fd; }
   .icon-btn.exec .social { background: #008080; color: #f4f7fd; }
@@ -253,7 +253,7 @@
     color: var(--ink); text-shadow: 0 1px 0 rgba(255,255,255,.75);
     box-shadow: 0 2px 6px rgba(20,40,80,.22), inset 0 -2px 5px rgba(0,0,0,.07);
   }
-  .big-btn.discord { color: var(--blue-dark); }
+  .big-btn.discord { color: var(--ink); }
   .big-btn::before { content: ''; position: absolute; left: 0; right: 0; top: 0; height: 48%; background: linear-gradient(rgba(255,255,255,.55), rgba(255,255,255,.08)); }
   .big-btn span { position: relative; }
   .big-btn:hover { transform: translateY(-2px); filter: brightness(1.1); }
@@ -331,9 +331,27 @@
     .win-body.art { min-height: 240px; font-size: 1.4rem; }
     .big-buttons { margin-bottom: 24px; }
   }
-  @media (max-width: 560px) {
-    .title { font-size: 2.1rem; }
-    .kicker { font-size: .95rem; }
+  @media (max-width: 760px) {
+    /* static two-line banner: no scroll, single copy */
+    .marquee { overflow: visible; padding: 4px 12px; }
+    .track { width: auto; display: block; animation: none; transform: none; }
+    .set { display: block; }
+    .set + .set, .mq-item + .mq-item, .sep { display: none; }
+    .mq-item { display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 0; white-space: normal; text-align: center; }
+    .kicker { font-size: .8rem; letter-spacing: .3em; }
+    .title { font-size: clamp(1.4rem, 6.4vw, 2.4rem); letter-spacing: .03em; line-height: 1.15; }
+    /* lighter, smaller body text */
+    .win-body.text { font-size: .78rem; line-height: 2; }
+    .win-title { font-size: .75rem; }
+    .mainnav { font-size: .7rem; }
+    .footer { font-size: .75rem; }
+    .icon-btn .label b { font-size: clamp(.88rem, 4vw, 1.05rem); }
+    .icon-btn .label small { font-size: clamp(.6rem, 2.7vw, .72rem); }
+    .team > div { font-size: .72rem; }
+    .timeline p { font-size: .72rem; }
+    .timeline h5 { font-size: .85rem; }
+    .tile { font-size: .68rem; }
+    .win-body.pic p { font-size: .72rem; }
   }
 </style>
 </head>
@@ -373,7 +391,7 @@
             <p>To get in touch, <mark>contact me on Discord</mark>, or email <a href="mailto:games@karokimachine.com"><mark>games@karokimachine.com</mark></a>.</p>
             <p>Thanks for stopping by.</p>
           </div>
-          <div class="win-foot"><span class="credit-text" style="color:#7a808a">Credits to @arriazye on Discord for website design help</span></div>
+          <div class="win-foot"><span class="credit-text" style="color:var(--ink)">Credits to @arriazye on Discord for website design help</span></div>
         </section>
 
         <div class="icon-row">

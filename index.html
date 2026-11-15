@@ -259,16 +259,8 @@
   .ph img { width: 100%; height: 100%; object-fit: cover; display: block; }
   .tile a { color: inherit; }
 
-  #follower { position: fixed; left: 0; top: 0; width: 26px; height: 26px; pointer-events: none; z-index: 9999; opacity: 0; transition: opacity .3s; will-change: transform; }
-  #follower svg { width: 100%; height: 100%; animation: spin 5s linear infinite; filter: drop-shadow(0 0 3px rgba(110,165,255,.9)) drop-shadow(0 1px 1px rgba(20,40,90,.5)); }
-  @keyframes spin { to { transform: rotate(360deg); } }
-  .spark { position: fixed; left: 0; top: 0; width: 7px; height: 7px; pointer-events: none; z-index: 9998; animation: spark .8s ease-out forwards; }
-  @keyframes spark {
-    from { opacity: 1; transform: translate(var(--x), var(--y)) scale(1); }
-    to   { opacity: 0; transform: translate(calc(var(--x) + var(--dx)), calc(var(--y) + var(--dy))) scale(.2) rotate(90deg); }
-  }
   @media (prefers-reduced-motion: reduce) {
-    .stage, #follower svg, .view.active { animation: none; }
+    .stage, .view.active { animation: none; }
   }
 
   @media (max-width: 760px) {
@@ -410,6 +402,7 @@
           <div class="win-title">Timeline</div>
           <div class="win-body scroll">
             <ol class="timeline">
+              <li><time>15/11/26</time><h5>execute&gt;loop hits 1000 downloads!</h5></li>
               <li><time>06/11/26</time><h5>karokimachine.com was created!</h5><p>This is the date of karokimachine.com's creation.</p></li>
               <li><time>3-9/9/26</time><h5>First Yume-Chan Design</h5><p>I had become inspired on a walk home after school while listening to Kikuo. What if someone were to be replaced by a perfect version of themselves?</p><p>Later that day, on call with my dear friend Nin, we were coming up with stories, and that is when I found the basic plot of CURE✚Yume-Chan♡. Several days later, on the 9th, the first concept design was created!</p></li>
               <li><time>1/9/26</time><h5>Part 1 releases</h5><p>Part 1 of execute&gt;loop finally came out on this day, and hit 300 downloads almost immediately, alongside 100 Discord members. This was a major milestone for me.</p></li>
@@ -445,13 +438,6 @@
       <div class="win-foot"></div>
     </aside>
   </div>
-</div>
-
-<div id="follower" aria-hidden="true">
-  <svg viewBox="0 0 9 9" shape-rendering="crispEdges">
-    <defs><linearGradient id="silverStar" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ffffff"/><stop offset=".5" stop-color="#c3ccd9"/><stop offset="1" stop-color="#8e9bb2"/></linearGradient></defs>
-    <polygon points="4.5,0 5.5,3.5 9,4.5 5.5,5.5 4.5,9 3.5,5.5 0,4.5 3.5,3.5" fill="url(#silverStar)" stroke="#5b6b8c" stroke-width=".45"/>
-  </svg>
 </div>
 
 <script>
@@ -518,36 +504,6 @@
   window.addEventListener('hashchange', route);
   route();
 
-  (function () {
-    if (reduce || !matchMedia('(hover: hover) and (pointer: fine)').matches) return;
-    const f = document.getElementById('follower');
-    const colours = ['#5b8fe3', '#8fb4f0', '#c3ccd9', '#eef2f8', '#ffffff', '#9aa6bb'];
-    let tx = 0, ty = 0, x = 0, y = 0, seen = false, last = 0;
-    window.addEventListener('mousemove', e => {
-      tx = e.clientX; ty = e.clientY;
-      if (!seen) { seen = true; x = tx; y = ty; }
-      f.style.opacity = 1;
-    });
-    document.documentElement.addEventListener('mouseleave', () => { f.style.opacity = 0; });
-    function spark(px, py) {
-      const s = document.createElement('span');
-      s.className = 'spark';
-      s.style.cssText = `--x:${px + (Math.random() * 10 - 5)}px;--y:${py + (Math.random() * 10 - 5)}px;` +
-        `--dx:${Math.random() * 24 - 12}px;--dy:${Math.random() * 24 + 4}px;` +
-        `background:${colours[Math.floor(Math.random() * colours.length)]}`;
-      s.addEventListener('animationend', () => s.remove());
-      document.body.appendChild(s);
-    }
-    function tick(t) {
-      const dx = tx - x, dy = ty - y;
-      x += dx * 0.12; y += dy * 0.12;
-      const px = x + 8, py = y + 8;
-      f.style.transform = `translate(${px}px, ${py}px)`;
-      if (seen && Math.hypot(dx, dy) > 10 && t - last > 70) { last = t; spark(px + 10, py + 10); }
-      requestAnimationFrame(tick);
-    }
-    requestAnimationFrame(tick);
-  })();
 </script>
 <div class="lightbox" id="lightbox" role="dialog" aria-modal="true" aria-label="Image viewer"><img id="lightbox-img" alt=""></div>
 <script>
